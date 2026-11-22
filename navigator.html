@@ -4,6 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="可搜索、可分类筛选的个人服务导航"><meta name="theme-color" content="#ffffff"><meta name="color-scheme" content="light dark">
   <title>个人导航</title>
+  <script>try{if(localStorage.getItem('navigator-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
   <style>
     :root{
       color-scheme:light;
@@ -15,8 +16,8 @@
       --warn-bg:#fff8e6;--warn-line:#e8c47a;--warn-ink:#7a5300;
       --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
     }
-    /* 深色主题：由页头开关控制，不依赖 JavaScript */
-    html:has(#themeToggle:checked){
+    /* 深色主题：由页头开关写入 data-theme，选择保存在 localStorage */
+    html[data-theme=dark]{
       color-scheme:dark;
       --page:#080d14;--surface:#0e1520;--ink:#e6edf7;--muted:#93a1b5;--line:#1d2836;
       --brand:#38bdf8;--soft:#0b2434;--on-brand:#04121c;--placeholder:#7e8da3;
@@ -55,12 +56,12 @@
     .external:hover{border-color:var(--hover-line);background:var(--soft);color:var(--brand)}
     .theme-switch{position:relative;display:grid;place-items:center;width:38px;height:38px;flex:none;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--muted);cursor:pointer;transition:border-color .12s,background .12s,color .12s}
     .theme-switch:hover{border-color:var(--hover-line);background:var(--soft);color:var(--brand)}
-    .theme-switch:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}
+    .theme-switch:focus-within{outline:2px solid var(--brand);outline-offset:2px}
     .theme-switch input{position:absolute;width:1px;height:1px;margin:0;opacity:0}
     .theme-switch svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
     .theme-switch .icon-sun{display:none}
-    html:has(#themeToggle:checked) .theme-switch .icon-sun{display:block}
-    html:has(#themeToggle:checked) .theme-switch .icon-moon{display:none}
+    html[data-theme=dark] .theme-switch .icon-sun{display:block}
+    html[data-theme=dark] .theme-switch .icon-moon{display:none}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
     /* 布局与侧栏 */
@@ -156,6 +157,12 @@
     const load=key=>{try{const value=JSON.parse(localStorage.getItem(key));return Array.isArray(value)?value:[]}catch{return[]}},save=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value))}catch{}};
     const state={category:'all',query:'',recent:load('navigator-recent')},byId=new Map(services.map(s=>[s.id,s]));
     const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    // 主题：首次默认浅色，之后记住选择
+    const themeToggle=$('#themeToggle'),THEME_KEY='navigator-theme';
+    const darkTheme=(()=>{try{return localStorage.getItem(THEME_KEY)==='dark'}catch{return false}})();
+    themeToggle.checked=darkTheme;
+    document.documentElement.dataset.theme=darkTheme?'dark':'light';
+    themeToggle.addEventListener('change',()=>{const dark=themeToggle.checked;document.documentElement.dataset.theme=dark?'dark':'light';try{localStorage.setItem(THEME_KEY,dark?'dark':'light')}catch{}});
     const ICONS={
       all:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
       search:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
