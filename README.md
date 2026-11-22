@@ -8,6 +8,7 @@
 - **分类筛选**：左侧栏显示分类与条目数，点击只看该分类
 - **最近访问**：自动记录最近点开的 12 个服务，只保存在本机 localStorage，不上传
 - **搜索跳转**：输入关键词后可直接用 Bing 或 Google 搜索
+- **键盘操作**：按 `/` 聚焦搜索框，按 `Esc` 清空并退出
 - **单文件零依赖**：样式、脚本、数据都在 `navigator.html` 内，不请求外部字体、图片或 CDN，用 `file://` 打开即可
 - **响应式**：桌面为侧栏 + 卡片网格；窄屏下分类变为顶部横向按钮条，更窄时卡片收为两列。保留键盘焦点样式，并遵循 `prefers-reduced-motion`
 
@@ -37,7 +38,7 @@
 所有站点数据都在 `navigator.html` 里的 `<script type="application/json" id="navigator-data">` 中，改完刷新页面即可生效。
 
 - **新增服务**：在 `services` 里加一条，`id` 需唯一，`category` 必须是 `categories` 中已有的 `id`
-- **分类**：`categories` 中的 `id` 同时用于筛选和锚点，`name`、`icon`、`description` 会直接展示
+- **分类**：`categories` 中的 `id` 同时用于筛选、锚点和图标映射，`name`、`description` 会直接展示；`icon` 字段目前保留但不再渲染
 - **注意**：最近访问保存的是服务 `id`，修改已有 `id` 会让对应的历史记录失效
 
 ## 已知限制
