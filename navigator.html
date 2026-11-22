@@ -142,15 +142,62 @@
     };
     const icon=name=>ICONS[name]||'';
     $('#headerMeta').textContent=`${services.length} SITES · ${categories.length} GROUPS`;
-    const match=s=>!state.query||[s.name,s.description,...s.tags].join(' ').toLowerCase().includes(state.query.toLowerCase());
+    const searchIndex=new Map(services.map(s=>[s.id,[s.name,s.description,...s.tags].join(' ').toLowerCase()]));
+    const counts=new Map(categories.map(c=>[c.id,0]));
+    services.forEach(s=>counts.set(s.category,(counts.get(s.category)||0)+1));
+    const sectionEls=new Map(),sectionCards=new Map(),sectionCounts=new Map();
     function card(s){return `<article class="card" data-id="${s.id}"><a class="card-link" href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="打开 ${esc(s.name)}（新窗口）"><span class="name">${esc(s.name)}</span><span class="desc">${esc(s.description)}</span><span class="tags">${s.tags.slice(0,3).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</span></a></article>`}
-    function renderNav(){const all=[{id:'all',name:'全部',count:services.length},...categories.map(c=>({id:c.id,name:c.name,count:services.filter(s=>s.category===c.id).length}))];$('#categoryNav').innerHTML=all.map(c=>`<button type="button" data-category="${c.id}" aria-pressed="${state.category===c.id}">${icon(c.id)}<span>${c.name}</span><small>${c.count}</small></button>`).join('')}
+    function renderNav(){const all=[{id:'all',name:'全部',count:services.length},...categories.map(c=>({id:c.id,name:c.name,count:counts.get(c.id)||0}))];$('#categoryNav').innerHTML=all.map(c=>`<button type="button" data-category="${c.id}" aria-pressed="${state.category===c.id}">${icon(c.id)}<span>${c.name}</span><small>${c.count}</small></button>`).join('')}
     function renderRecent(){const items=state.recent.map(id=>byId.get(id)).filter(Boolean);$('#recentBox').hidden=!items.length;$('#recent').innerHTML=items.map(s=>card(s)).join('')}
-    function render(){renderNav();renderRecent();let count=0;$('#sections').innerHTML=categories.map((c,i)=>{const items=services.filter(s=>s.category===c.id&&match(s)),selected=state.category==='all'||state.category===c.id;if(selected)count+=items.length;return `<section class="section" id="category-${c.id}" ${!selected||!items.length?'hidden':''}><div class="head"><div class="head-main"><span class="idx">${String(i+1).padStart(2,'0')}</span><h2>${icon(c.id)}${c.name}</h2><p>${c.description}</p></div><span class="count">${items.length} 项</span></div><div class="grid">${items.map(s=>card(s)).join('')}</div></section>`}).join('');const filtered=state.query||state.category!=='all';$('#summary').textContent=filtered?`找到 ${count} 项服务${state.query?`，匹配“${state.query}”`:''}`:'';$('#empty').classList.toggle('show',count===0)}
-    $('#categoryNav').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(!b)return;state.category=b.dataset.category;render();$(state.category==='all'?'#main':`#category-${state.category}`)?.scrollIntoView({behavior:'smooth',block:'start'})});
+    function buildSections(){
+      $('#sections').innerHTML=categories.map((c,i)=>{
+        const total=counts.get(c.id)||0;
+        return `<section class="section" id="category-${c.id}"><div class="head"><div class="head-main"><span class="idx">${String(i+1).padStart(2,'0')}</span><h2>${icon(c.id)}${c.name}</h2><p>${c.description}</p></div><span class="count">${total} 项</span></div><div class="grid">${services.filter(s=>s.category===c.id).map(s=>card(s)).join('')}</div></section>`;
+      }).join('');
+      categories.forEach(c=>{
+        const section=$(`#category-${c.id}`);
+        sectionEls.set(c.id,section);
+        sectionCards.set(c.id,[...section.querySelectorAll('.card')]);
+        sectionCounts.set(c.id,section.querySelector('.count'));
+      });
+    }
+    const summaryEl=$('#summary'),emptyEl=$('#empty');
+    // 只更新会显示的分区，隐藏分区不触发卡片布局
+    function applyFilter(){
+      const q=state.query.toLowerCase(),all=state.category==='all';
+      let total=0;
+      categories.forEach(c=>{
+        const section=sectionEls.get(c.id);
+        if(!all&&state.category!==c.id){section.hidden=true;return}
+        const cards=sectionCards.get(c.id),hits=[];
+        let visible=0;
+        for(const el of cards){const hit=!q||searchIndex.get(el.dataset.id).includes(q);hits.push(hit);if(hit)visible++}
+        if(!visible){section.hidden=true;return}
+        cards.forEach((el,i)=>{const hide=!hits[i];if(el.hidden!==hide)el.hidden=hide});
+        sectionCounts.get(c.id).textContent=`${visible} 项`;
+        section.hidden=false;
+        total+=visible;
+      });
+      const filtered=Boolean(state.query)||state.category!=='all';
+      summaryEl.textContent=filtered?`找到 ${total} 项服务${state.query?`，匹配“${state.query}”`:''}`:'';
+      emptyEl.classList.toggle('show',total===0);
+    }
+    // 合并连续输入，避免每个按键都触发一次完整布局
+    let filterTimer;
+    const scheduleFilter=()=>{clearTimeout(filterTimer);filterTimer=setTimeout(applyFilter,80)};
+    $('#categoryNav').addEventListener('click',e=>{
+      const b=e.target.closest('[data-category]');if(!b)return;
+      clearTimeout(filterTimer);
+      state.category=b.dataset.category;
+      document.querySelectorAll('#categoryNav button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.category===state.category)));
+      applyFilter();
+      $(state.category==='all'?'#main':`#category-${state.category}`)?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
     document.addEventListener('click',e=>{const link=e.target.closest('.card[data-id]');if(!link)return;state.recent=[link.dataset.id,...state.recent.filter(x=>x!==link.dataset.id)].slice(0,RECENT_LIMIT);save('navigator-recent',state.recent);renderRecent()});
-    $('#searchInput').addEventListener('input',e=>{state.query=e.target.value.trim();render()});$('#searchForm').addEventListener('submit',e=>{e.preventDefault();const q=$('#searchInput').value.trim(),base=e.submitter?.dataset.engine==='google'?'https://www.google.com/search?q=':'https://www.bing.com/search?q=';if(q)window.open(base+encodeURIComponent(q),'_blank','noopener')});render();
-    document.addEventListener('keydown',e=>{const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable;if(e.key==='/'&&!typing){e.preventDefault();$('#searchInput').focus()}else if(e.key==='Escape'&&document.activeElement===$('#searchInput')){$('#searchInput').value='';state.query='';render();$('#searchInput').blur()}});
+    $('#searchInput').addEventListener('input',e=>{state.query=e.target.value.trim();scheduleFilter()});
+    $('#searchForm').addEventListener('submit',e=>{e.preventDefault();const q=$('#searchInput').value.trim(),base=e.submitter?.dataset.engine==='google'?'https://www.google.com/search?q=':'https://www.bing.com/search?q=';if(q)window.open(base+encodeURIComponent(q),'_blank','noopener')});
+    document.addEventListener('keydown',e=>{const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable;if(e.key==='/'&&!typing){e.preventDefault();$('#searchInput').focus()}else if(e.key==='Escape'&&document.activeElement===$('#searchInput')){clearTimeout(filterTimer);$('#searchInput').value='';state.query='';applyFilter();$('#searchInput').blur()}});
+    renderNav();buildSections();renderRecent();applyFilter();
     }
     document.addEventListener('DOMContentLoaded',()=>initNavigator(JSON.parse(document.querySelector('#navigator-data').textContent)));
   </script>
