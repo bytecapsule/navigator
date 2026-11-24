@@ -10,7 +10,7 @@
 - **搜索跳转**：输入关键词后可直接用 Bing 或 Google 搜索
 - **键盘操作**：按 `/` 聚焦搜索框，按 `Esc` 清空并退出
 - **明暗切换**：默认 Light；右上角的月亮/太阳按钮切换 Light/Dark，选择保存在本机 localStorage，下次打开自动恢复
-- **单文件零依赖**：样式、脚本、数据都在 `navigator.html` 内，不请求外部字体、图片或 CDN，用 `file://` 打开即可
+- **单文件零依赖**：样式、脚本、数据都在 `index.html` 内，不请求外部字体、图片或 CDN，用 `file://` 打开即可
 - **响应式**：桌面为侧栏 + 卡片网格；窄屏下分类变为顶部横向按钮条，更窄时卡片收为两列。保留键盘焦点样式，并遵循 `prefers-reduced-motion`
 - **线性图标**：分类图标为内联 SVG（放大镜、芯片、文档、终端、用户、指南针），不依赖 emoji 或图标库
 
@@ -29,15 +29,15 @@
 
 ## 使用
 
-1. 打开 `navigator.html`（双击或拖进浏览器即可，不需要服务器）
+1. 打开 `index.html`（双击或拖进浏览器即可，不需要服务器）
 2. 把它设为浏览器主页，或固定为标签页
 3. 点击卡片会在新标签页打开服务，同时该服务进入「最近访问」
 
-如果希望在其他设备访问，可以把仓库发布到 GitHub Pages 等静态托管，无需构建步骤。
+如果希望在其他设备访问，可以把仓库发布到 GitHub Pages 等静态托管，无需构建步骤；`index.html` 会作为站点首页。
 
 ## 自定义
 
-所有站点数据都在 `navigator.html` 里的 `<script type="application/json" id="navigator-data">` 中，改完刷新页面即可生效。
+所有站点数据都在 `index.html` 里的 `<script type="application/json" id="navigator-data">` 中，改完刷新页面即可生效。
 
 - **新增服务**：在 `services` 里加一条，`id` 需唯一，`category` 必须是 `categories` 中已有的 `id`
 - **分类**：`categories` 中的 `id` 同时用于筛选、锚点和图标映射，`name`、`description` 会直接展示；`icon` 字段目前保留但不再渲染
@@ -67,7 +67,7 @@
 
 ```sh
 python3 -m http.server 8000
-# 打开 http://localhost:8000/navigator.html
+# 打开 http://localhost:8000/（自动加载 index.html）
 ```
 
 ## 许可
