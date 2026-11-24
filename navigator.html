@@ -170,7 +170,8 @@
       life:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 8-2.4 5.6L8 16l2.4-5.6z"/></svg>'
     };
     const icon=name=>ICONS[name]||'';
-    const searchIndex=new Map(services.map(s=>[s.id,[s.name,s.description,...s.tags].join(' ').toLowerCase()]));
+    const catById=new Map(categories.map(c=>[c.id,c]));
+    const searchIndex=new Map(services.map(s=>{const c=catById.get(s.category)||{};return [s.id,[s.name,s.description,...s.tags,c.name,c.description].filter(Boolean).join(' ').toLowerCase()]}));
     const counts=new Map(categories.map(c=>[c.id,0]));
     services.forEach(s=>counts.set(s.category,(counts.get(s.category)||0)+1));
     const sectionEls=new Map(),sectionCards=new Map(),sectionCounts=new Map();
@@ -260,7 +261,7 @@
       {
         "id": "media",
         "icon": "👥",
-        "name": "社区",
+        "name": "媒体",
         "description": "影音娱乐、社交与内容发布"
       },
       {
@@ -302,116 +303,6 @@
         "tags": [
           "搜索",
           "中文"
-        ]
-      },
-      {
-        "id": "tools-得到大脑",
-        "category": "productivity",
-        "name": "得到大脑",
-        "url": "https://www.biji.com/",
-        "description": "AI 智能笔记",
-        "tags": [
-          "笔记",
-          "知识"
-        ]
-      },
-      {
-        "id": "tools-印象笔记",
-        "category": "productivity",
-        "name": "印象笔记",
-        "url": "https://app.yinxiang.com/Home.action",
-        "description": "专业笔记管理",
-        "tags": [
-          "笔记",
-          "知识"
-        ]
-      },
-      {
-        "id": "work-Gmail",
-        "category": "productivity",
-        "name": "Gmail",
-        "url": "https://mail.google.com/",
-        "description": "Google 邮箱",
-        "tags": [
-          "邮箱",
-          "邮件"
-        ]
-      },
-      {
-        "id": "work-QQ邮箱",
-        "category": "productivity",
-        "name": "QQ邮箱",
-        "url": "https://mail.qq.com/",
-        "description": "腾讯邮箱",
-        "tags": [
-          "邮箱",
-          "邮件"
-        ]
-      },
-      {
-        "id": "work-163邮箱",
-        "category": "productivity",
-        "name": "163邮箱",
-        "url": "https://mail.163.com/",
-        "description": "网易邮箱",
-        "tags": [
-          "邮箱",
-          "邮件"
-        ]
-      },
-      {
-        "id": "tools-Draw.io",
-        "category": "productivity",
-        "name": "Draw.io",
-        "url": "https://app.diagrams.net/",
-        "description": "在线流程图",
-        "tags": [
-          "图表",
-          "流程图"
-        ]
-      },
-      {
-        "id": "tools-Excalidraw",
-        "category": "productivity",
-        "name": "Excalidraw",
-        "url": "https://excalidraw.com/",
-        "description": "手绘白板",
-        "tags": [
-          "白板",
-          "图表"
-        ]
-      },
-      {
-        "id": "work-WPS Office",
-        "category": "productivity",
-        "name": "WPS Office",
-        "url": "https://www.wps.cn/",
-        "description": "国产办公套件",
-        "tags": [
-          "办公",
-          "文档"
-        ]
-      },
-      {
-        "id": "work-腾讯文档",
-        "category": "productivity",
-        "name": "腾讯文档",
-        "url": "https://docs.qq.com/",
-        "description": "在线文档协作",
-        "tags": [
-          "文档",
-          "协作"
-        ]
-      },
-      {
-        "id": "work-Microsoft 365",
-        "category": "productivity",
-        "name": "Microsoft 365",
-        "url": "https://www.office.com/",
-        "description": "微软办公套件",
-        "tags": [
-          "办公",
-          "文档"
         ]
       },
       {
@@ -481,50 +372,6 @@
         ]
       },
       {
-        "id": "ai-NotebookLM",
-        "category": "ai",
-        "name": "NotebookLM",
-        "url": "https://notebooklm.google/",
-        "description": "AI 笔记本",
-        "tags": [
-          "笔记",
-          "文档"
-        ]
-      },
-      {
-        "id": "ai-Google AI Studio",
-        "category": "ai",
-        "name": "Google AI Studio",
-        "url": "https://aistudio.google.com/",
-        "description": "AI 应用开发",
-        "tags": [
-          "AI 开发",
-          "平台"
-        ]
-      },
-      {
-        "id": "ai-Suno",
-        "category": "ai",
-        "name": "Suno",
-        "url": "https://suno.com/",
-        "description": "文本生成音乐",
-        "tags": [
-          "音乐",
-          "生成"
-        ]
-      },
-      {
-        "id": "ai-ElevenLabs",
-        "category": "ai",
-        "name": "ElevenLabs",
-        "url": "https://elevenlabs.io/",
-        "description": "AI 语音合成",
-        "tags": [
-          "语音",
-          "合成"
-        ]
-      },
-      {
         "id": "ai-Kimi",
         "category": "ai",
         "name": "Kimi",
@@ -547,14 +394,14 @@
         ]
       },
       {
-        "id": "ai-Manus",
+        "id": "ai-NotebookLM",
         "category": "ai",
-        "name": "Manus",
-        "url": "https://manus.im/",
-        "description": "自主任务智能体",
+        "name": "NotebookLM",
+        "url": "https://notebooklm.google/",
+        "description": "AI 笔记本",
         "tags": [
-          "智能体",
-          "任务"
+          "笔记",
+          "文档"
         ]
       },
       {
@@ -566,6 +413,50 @@
         "tags": [
           "知识库",
           "笔记"
+        ]
+      },
+      {
+        "id": "ai-Google AI Studio",
+        "category": "ai",
+        "name": "Google AI Studio",
+        "url": "https://aistudio.google.com/",
+        "description": "AI 应用开发",
+        "tags": [
+          "AI 开发",
+          "平台"
+        ]
+      },
+      {
+        "id": "ai-Manus",
+        "category": "ai",
+        "name": "Manus",
+        "url": "https://manus.im/",
+        "description": "自主任务智能体",
+        "tags": [
+          "智能体",
+          "任务"
+        ]
+      },
+      {
+        "id": "ai-Suno",
+        "category": "ai",
+        "name": "Suno",
+        "url": "https://suno.com/",
+        "description": "文本生成音乐",
+        "tags": [
+          "音乐",
+          "生成"
+        ]
+      },
+      {
+        "id": "ai-ElevenLabs",
+        "category": "ai",
+        "name": "ElevenLabs",
+        "url": "https://elevenlabs.io/",
+        "description": "AI 语音合成",
+        "tags": [
+          "语音",
+          "合成"
         ]
       },
       {
@@ -599,6 +490,127 @@
         "tags": [
           "音乐",
           "生成"
+        ]
+      },
+      {
+        "id": "tools-得到大脑",
+        "category": "productivity",
+        "name": "得到大脑",
+        "url": "https://www.biji.com/",
+        "description": "AI 智能笔记",
+        "tags": [
+          "笔记",
+          "知识"
+        ]
+      },
+      {
+        "id": "tools-印象笔记",
+        "category": "productivity",
+        "name": "印象笔记",
+        "url": "https://app.yinxiang.com/Home.action",
+        "description": "专业笔记管理",
+        "tags": [
+          "笔记",
+          "知识"
+        ]
+      },
+      {
+        "id": "tools-flomo",
+        "category": "productivity",
+        "name": "flomo",
+        "url": "https://v.flomoapp.com/",
+        "description": "轻量灵感记录",
+        "tags": [
+          "笔记",
+          "灵感"
+        ]
+      },
+      {
+        "id": "work-Gmail",
+        "category": "productivity",
+        "name": "Gmail",
+        "url": "https://mail.google.com/",
+        "description": "Google 邮箱",
+        "tags": [
+          "邮箱",
+          "邮件"
+        ]
+      },
+      {
+        "id": "work-QQ邮箱",
+        "category": "productivity",
+        "name": "QQ邮箱",
+        "url": "https://mail.qq.com/",
+        "description": "腾讯邮箱",
+        "tags": [
+          "邮箱",
+          "邮件"
+        ]
+      },
+      {
+        "id": "work-163邮箱",
+        "category": "productivity",
+        "name": "163邮箱",
+        "url": "https://mail.163.com/",
+        "description": "网易邮箱",
+        "tags": [
+          "邮箱",
+          "邮件"
+        ]
+      },
+      {
+        "id": "work-WPS Office",
+        "category": "productivity",
+        "name": "WPS Office",
+        "url": "https://www.wps.cn/",
+        "description": "国产办公套件",
+        "tags": [
+          "办公",
+          "文档"
+        ]
+      },
+      {
+        "id": "work-腾讯文档",
+        "category": "productivity",
+        "name": "腾讯文档",
+        "url": "https://docs.qq.com/",
+        "description": "在线文档协作",
+        "tags": [
+          "文档",
+          "协作"
+        ]
+      },
+      {
+        "id": "work-Microsoft 365",
+        "category": "productivity",
+        "name": "Microsoft 365",
+        "url": "https://www.office.com/",
+        "description": "微软办公套件",
+        "tags": [
+          "办公",
+          "文档"
+        ]
+      },
+      {
+        "id": "tools-Draw.io",
+        "category": "productivity",
+        "name": "Draw.io",
+        "url": "https://app.diagrams.net/",
+        "description": "在线流程图",
+        "tags": [
+          "图表",
+          "流程图"
+        ]
+      },
+      {
+        "id": "tools-Excalidraw",
+        "category": "productivity",
+        "name": "Excalidraw",
+        "url": "https://excalidraw.com/",
+        "description": "手绘白板",
+        "tags": [
+          "白板",
+          "图表"
         ]
       },
       {
@@ -646,6 +658,17 @@
         ]
       },
       {
+        "id": "cloud-Oracle Cloud",
+        "category": "development",
+        "name": "Oracle Cloud",
+        "url": "https://www.oracle.com/cloud/",
+        "description": "企业级云与数据库",
+        "tags": [
+          "云计算",
+          "数据库"
+        ]
+      },
+      {
         "id": "cloud-AMD",
         "category": "development",
         "name": "AMD AI 平台",
@@ -668,14 +691,124 @@
         ]
       },
       {
-        "id": "cloud-Oracle Cloud",
-        "category": "development",
-        "name": "Oracle Cloud",
-        "url": "https://www.oracle.com/cloud/",
-        "description": "企业级云与数据库",
+        "id": "social-X",
+        "category": "media",
+        "name": "X",
+        "url": "https://x.com/",
+        "description": "全球社交媒体",
         "tags": [
-          "云计算",
-          "数据库"
+          "社交",
+          "社区"
+        ]
+      },
+      {
+        "id": "social-Discord",
+        "category": "media",
+        "name": "Discord",
+        "url": "https://discord.com/",
+        "description": "社群语音聊天",
+        "tags": [
+          "社交",
+          "语音"
+        ]
+      },
+      {
+        "id": "social-微博",
+        "category": "media",
+        "name": "微博",
+        "url": "https://weibo.com/",
+        "description": "中国最大社交媒体",
+        "tags": [
+          "社交",
+          "社区"
+        ]
+      },
+      {
+        "id": "social-知乎",
+        "category": "media",
+        "name": "知乎",
+        "url": "https://www.zhihu.com/",
+        "description": "问答社区",
+        "tags": [
+          "问答",
+          "社区"
+        ]
+      },
+      {
+        "id": "entertainment-YouTube",
+        "category": "media",
+        "name": "YouTube",
+        "url": "https://www.youtube.com/",
+        "description": "全球最大视频平台",
+        "tags": [
+          "视频",
+          "影音"
+        ]
+      },
+      {
+        "id": "entertainment-哔哩哔哩",
+        "category": "media",
+        "name": "哔哩哔哩",
+        "url": "https://www.bilibili.com/",
+        "description": "弹幕视频网站",
+        "tags": [
+          "视频",
+          "弹幕"
+        ]
+      },
+      {
+        "id": "entertainment-抖音",
+        "category": "media",
+        "name": "抖音",
+        "url": "https://www.douyin.com/",
+        "description": "短视频平台",
+        "tags": [
+          "视频",
+          "短视频"
+        ]
+      },
+      {
+        "id": "entertainment-红果短剧",
+        "category": "media",
+        "name": "红果短剧",
+        "url": "https://hongguoduanju.com/",
+        "description": "免费短剧在线观看",
+        "tags": [
+          "视频",
+          "短剧"
+        ]
+      },
+      {
+        "id": "social-微信公众平台",
+        "category": "media",
+        "name": "微信公众平台",
+        "url": "https://mp.weixin.qq.com/",
+        "description": "公众号管理后台",
+        "tags": [
+          "微信",
+          "公众号"
+        ]
+      },
+      {
+        "id": "social-微信视频号",
+        "category": "media",
+        "name": "微信视频号",
+        "url": "https://channels.weixin.qq.com/",
+        "description": "微信短视频平台",
+        "tags": [
+          "微信",
+          "短视频"
+        ]
+      },
+      {
+        "id": "social-抖音创作者平台",
+        "category": "media",
+        "name": "抖音创作者平台",
+        "url": "https://creator.douyin.com/",
+        "description": "抖音创作后台",
+        "tags": [
+          "抖音",
+          "创作"
         ]
       },
       {
@@ -745,17 +878,6 @@
         ]
       },
       {
-        "id": "tools-flomo",
-        "category": "productivity",
-        "name": "flomo",
-        "url": "https://v.flomoapp.com/",
-        "description": "轻量灵感记录",
-        "tags": [
-          "笔记",
-          "灵感"
-        ]
-      },
-      {
         "id": "life-12306",
         "category": "life",
         "name": "12306",
@@ -764,127 +886,6 @@
         "tags": [
           "出行",
           "铁路"
-        ]
-      },
-      {
-        "id": "social-X",
-        "category": "media",
-        "name": "X",
-        "url": "https://x.com/",
-        "description": "全球社交媒体",
-        "tags": [
-          "社交",
-          "社区"
-        ]
-      },
-      {
-        "id": "social-Discord",
-        "category": "media",
-        "name": "Discord",
-        "url": "https://discord.com/",
-        "description": "社群语音聊天",
-        "tags": [
-          "社交",
-          "语音"
-        ]
-      },
-      {
-        "id": "entertainment-YouTube",
-        "category": "media",
-        "name": "YouTube",
-        "url": "https://www.youtube.com/",
-        "description": "全球最大视频平台",
-        "tags": [
-          "视频",
-          "影音"
-        ]
-      },
-      {
-        "id": "social-微博",
-        "category": "media",
-        "name": "微博",
-        "url": "https://weibo.com/",
-        "description": "中国最大社交媒体",
-        "tags": [
-          "社交",
-          "社区"
-        ]
-      },
-      {
-        "id": "entertainment-哔哩哔哩",
-        "category": "media",
-        "name": "哔哩哔哩",
-        "url": "https://www.bilibili.com/",
-        "description": "弹幕视频网站",
-        "tags": [
-          "视频",
-          "弹幕"
-        ]
-      },
-      {
-        "id": "entertainment-抖音",
-        "category": "media",
-        "name": "抖音",
-        "url": "https://www.douyin.com/",
-        "description": "短视频平台",
-        "tags": [
-          "视频",
-          "短视频"
-        ]
-      },
-      {
-        "id": "entertainment-红果短剧",
-        "category": "media",
-        "name": "红果短剧",
-        "url": "https://hongguoduanju.com/",
-        "description": "免费短剧在线观看",
-        "tags": [
-          "视频",
-          "短剧"
-        ]
-      },
-      {
-        "id": "social-微信公众平台",
-        "category": "media",
-        "name": "微信公众平台",
-        "url": "https://mp.weixin.qq.com/",
-        "description": "公众号管理后台",
-        "tags": [
-          "微信",
-          "公众号"
-        ]
-      },
-      {
-        "id": "social-微信视频号",
-        "category": "media",
-        "name": "微信视频号",
-        "url": "https://channels.weixin.qq.com/",
-        "description": "微信短视频平台",
-        "tags": [
-          "微信",
-          "短视频"
-        ]
-      },
-      {
-        "id": "social-知乎",
-        "category": "media",
-        "name": "知乎",
-        "url": "https://www.zhihu.com/",
-        "description": "问答社区",
-        "tags": [
-          "问答",
-          "社区"
-        ]
-      },
-      {
-        "id": "social-抖音创作者平台",
-        "category": "media",
-        "name": "抖音创作者平台",
-        "url": "https://creator.douyin.com/",
-        "description": "抖音创作后台",
-        "tags": [
-          "抖音",
-          "创作"
         ]
       }
     ]
