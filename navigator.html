@@ -10,8 +10,8 @@
       color-scheme:light;
       --page:#f5f6f8;--surface:#fff;--ink:#0b1220;--muted:#5f6b7d;--line:#e2e6ed;
       --brand:#2563eb;--soft:#eff5ff;--active-bg:#e4edff;--active-ring:#2563eb2e;--radius:8px;
-      --on-brand:#fff;--placeholder:#647084;--hover:#f3f6fb;--hover-line:#b7cdf5;
-      --nav-ink:#334155;--tag-ink:#66748a;--tag-line:#e7ebf2;--card-hover:#fbfdff;
+      --on-brand:#fff;--placeholder:#647084;--hover:#f3f6fb;--hover-line:#b7cdf5;--hover-ring:#2563eb24;
+      --nav-ink:#334155;--tag-ink:#66748a;--tag-line:#e7ebf2;--card-hover:#f4f8ff;
       --logo-line:#c7d7f7;--ring:#2563eb1a;--selection:#dbeafe;--empty-line:#c3ccd9;
       --warn-bg:#fff8e6;--warn-line:#e8c47a;--warn-ink:#7a5300;
       --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
@@ -21,8 +21,8 @@
       color-scheme:dark;
       --page:#1b1d22;--surface:#25282f;--ink:#e9ebef;--muted:#a8aeb8;--line:#3a404a;
       --brand:#5cc8f2;--soft:#1f2d38;--active-bg:#243a4c;--active-ring:#5cc8f24d;--on-brand:#0a1118;--placeholder:#969da8;
-      --hover:#2c313a;--hover-line:#4f5a68;--nav-ink:#d6dae1;--tag-ink:#bdc4ce;
-      --tag-line:#3e4550;--card-hover:#2a2e37;--logo-line:#42515e;--ring:#5cc8f233;
+      --hover:#2c313a;--hover-line:#4f5a68;--hover-ring:#5cc8f238;--nav-ink:#d6dae1;--tag-ink:#bdc4ce;
+      --tag-line:#3e4550;--card-hover:#2d323c;--logo-line:#42515e;--ring:#5cc8f233;
       --selection:#2e4f61;--empty-line:#3a404a;
       --warn-bg:#2b2518;--warn-line:#5c4a2a;--warn-ink:#f0c674;
     }
@@ -89,8 +89,8 @@
     .section{scroll-margin-top:18px;margin-bottom:22px}
     .section>.head{padding-bottom:9px;border-bottom:1px solid var(--line)}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
-    .card{position:relative;min-height:100px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);transition:border-color .12s,background .12s}
-    .card:hover{border-color:var(--hover-line);background:var(--card-hover)}
+    .card{position:relative;min-height:100px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);transition:border-color .12s,background .12s,box-shadow .12s}
+    .card:hover{border-color:var(--brand);background:var(--card-hover);box-shadow:0 0 0 2px var(--hover-ring)}
     .card-link{display:flex;flex-direction:column;align-items:flex-start;min-height:98px;height:100%;padding:12px;color:var(--ink);text-decoration:none}
     .card-link:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
     .name{font-size:13.5px;font-weight:600;line-height:1.35}
